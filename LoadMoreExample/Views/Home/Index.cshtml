@@ -1,0 +1,51 @@
+﻿@model ItemsViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Items</h1>
+    <div id="Items">
+        @foreach (var item in Model.Items)
+        {
+            <h6>@item</h6>
+        }
+    </div>
+
+    @if (Model.HasMoreItems)
+    {
+        <a class="btn btn-primary mt-4 js-load-more">Load More..</a>
+    }
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            var nextPage = 2;
+
+            $('.js-load-more').on('click', function () {
+                var btn = $(this);
+
+                $.get({
+                    url: `/Home/LoadMore?pageNumber=${nextPage}`,
+                    success: function (result) {
+
+                        $.each(result.items, function (key, value) {
+                            $('#Items').append(`<h6>${value}</h6>`);
+                        });
+
+                        if (!result.hasMoreItems) {
+                            btn.remove();
+                        }
+
+                        nextPage++;
+                    },
+                    error: function() {
+                        alert('Something went wrong');
+                    }
+                });
+            });
+        });
+    </script>
+}
